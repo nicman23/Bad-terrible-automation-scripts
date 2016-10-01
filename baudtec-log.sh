@@ -11,58 +11,58 @@ beep() {
 }
 
 data() {
-output="$(curl -q http://$user:$pass@$ip:$port$status 2> /dev/null)"
-output="$(echo "$output" | sed -e 's/<[^>]*>//g' | sed -e 's/\&nbsp\;//g')"
-output="$(echo "$output" | sed -e 's/db/ db/g')"
-output="$(echo "$output" | grep -A 1000 'Status:')"
+  output="$(curl -q http://$user:$pass@$ip:$port$status 2> /dev/null)"
+  output="$(echo "$output" | sed -e 's/<[^>]*>//g' | sed -e 's/\&nbsp\;//g')"
+  output="$(echo "$output" | sed -e 's/db/ db/g')"
+  output="$(echo "$output" | grep -A 1000 'Status:')"
 }
 
 info () {
-while true; do
-  case $@ in
-    ''              ) break ;;
-    Status*         ) echo -e $1 '\t''\t''\t'$2 ; shift 2 ;;
-    HwVer*          ) shift 3 ;;
-    IP*             ) echo -e $1 $2 '\t''\t''\t'$3 ; shift 3 ;;
-    Mode*           ) echo -e $1 '\t''\t''\t'$2 ; shift 2 ;;
-    SNR*            ) echo -e $1 $2 '\t''\t''\t'$3 '\t'$4 '\t'$5 ; snrdown=$3 ; snrup=$4; shift 5 ;;
-    Line*           ) echo -e $1 $2 '\t''\t'$3 '\t'$4 '\t'$5 ; shift 5 ;;
-    Data*           ) echo -e $1 $2 '\t''\t''\t'$3 '\t'$4 '\t'$5 ; shift 5 ;;
-    Status*         ) echo $1 $2 ; shift 2 ;;
-    *               ) shift ;;
-  esac
-done
+  while true; do
+    case $@ in
+      ''              ) break ;;
+      Status*         ) echo -e $1 '\t''\t''\t'$2 ; shift 2 ;;
+      HwVer*          ) shift 3 ;;
+      IP*             ) echo -e $1 $2 '\t''\t''\t'$3 ; shift 3 ;;
+      Mode*           ) echo -e $1 '\t''\t''\t'$2 ; shift 2 ;;
+      SNR*            ) echo -e $1 $2 '\t''\t''\t'$3 '\t'$4 '\t'$5 ; snrdown=$3 ; snrup=$4; shift 5 ;;
+      Line*           ) echo -e $1 $2 '\t''\t'$3 '\t'$4 '\t'$5 ; shift 5 ;;
+      Data*           ) echo -e $1 $2 '\t''\t''\t'$3 '\t'$4 '\t'$5 ; shift 5 ;;
+      Status*         ) echo $1 $2 ; shift 2 ;;
+      *               ) shift ;;
+    esac
+  done
 
-ping=$(ping -w 1 -c 1 8.8.8.8 | grep ttl | awk '{print $7}' | sed -e 's/time=//g')
+  ping=$(ping -w 1 -c 1 8.8.8.8 | grep ttl | awk '{print $7}' | sed -e 's/time=//g')
 
-if [ -z "$ping" ] ; then
-  ping='Timeout' ; beep
-fi
+  if [ -z "$ping" ] ; then
+    ping='Timeout' ; beep
+  fi
 
-echo SNRdown: $snrdown SNRUp: $snrup Ping: $ping Date: $(date)>> /tmp/stats
+  echo SNRdown: $snrdown SNRUp: $snrup Ping: $ping Date: $(date)>> /tmp/stats
 }
 
 awk_from_stack_ex() {
-  sort -n | awk '
-  BEGIN {
-    c = 0;
-    sum = 0;
-  }
-  $1 ~ /^[0-9]*(\.[0-9]*)?$/ {
-    a[c++] = $1;
-    sum += $1;
-  }
-  END {
-    ave = sum / c;
-    if( (c % 2) == 1 ) {
-      median = a[ int(c/2) ];
-    } else {
-      median = ( a[c/2] + a[c/2-1] ) / 2;
+    sort -n | awk '
+    BEGIN {
+      c = 0;
+      sum = 0;
     }
-    OFS="\t\t";
-    print c, ave, median, a[0],  a[c-1];
-  }
-'
+    $1 ~ /^[0-9]*(\.[0-9]*)?$/ {
+      a[c++] = $1;
+      sum += $1;
+    }
+    END {
+      ave = sum / c;
+      if( (c % 2) == 1 ) {
+        median = a[ int(c/2) ];
+      } else {
+        median = ( a[c/2] + a[c/2-1] ) / 2;
+      }
+      OFS="\t\t";
+      print c, ave, median, a[0],  a[c-1];
+    }
+  '
 }
 
 snr_statistics_down() {
