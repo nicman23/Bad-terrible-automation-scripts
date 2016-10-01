@@ -29,7 +29,7 @@ while true; do
   esac
 done
 
-ping=$(ping -c 1 8.8.8.8 | grep ttl | awk '{print $7}' | sed -e 's/time=//g')
+ping=$(ping -w 1 -c 1 8.8.8.8 | grep ttl | awk '{print $7}' | sed -e 's/time=//g')
 
 if [ -z "$ping" ] ; then
   ping='Timeout'
@@ -84,5 +84,4 @@ rm /tmp/stats &> /dev/null
 while true; do
   data
   dialog --no-collapse --infobox "$(stich)" 25 99
-  sleep 1s
 done
