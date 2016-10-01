@@ -28,7 +28,14 @@ while true; do
     *               ) shift ;;
   esac
 done
-echo $snrdown $snrup $(date)>> /tmp/stats
+
+ping=$(ping -c 1 8.8.8.8 | grep ttl | awk '{print $7}' | sed -e 's/time=//g')
+
+if [ -z "$ping" ] ; then
+  ping='Timeout'
+fi
+
+echo SNRdown: $snrdown SNRUp: $snrup Ping: $ping Date: $(date)>> /tmp/stats
 }
 
 awk_from_stack_ex() {
@@ -55,11 +62,11 @@ awk_from_stack_ex() {
 }
 
 snr_statistics_down() {
-echo -e Down:'\t'"$(cat /tmp/stats | awk '{print $1}' | awk_from_stack_ex)"
+echo -e Down:'\t'"$(cat /tmp/stats | awk '{print $2}' | awk_from_stack_ex)"
 }
 
 snr_statistics_up() {
-echo -e Up:'\t'"$(cat /tmp/stats | awk '{print $2}' | awk_from_stack_ex)"
+echo -e Up:'\t'"$(cat /tmp/stats | awk '{print $4}' | awk_from_stack_ex)"
 }
 
 stich() {
