@@ -6,6 +6,10 @@ ip='192.168.1.1'
 port='80'
 status='/status/status_deviceinfo.htm'
 
+beep() {
+  pacmd play-file /usr/share/sounds/freedesktop/stereo/complete.oga 1
+}
+
 data() {
 output="$(curl -q http://$user:$pass@$ip:$port$status 2> /dev/null)"
 output="$(echo "$output" | sed -e 's/<[^>]*>//g' | sed -e 's/\&nbsp\;//g')"
@@ -32,7 +36,7 @@ done
 ping=$(ping -w 1 -c 1 8.8.8.8 | grep ttl | awk '{print $7}' | sed -e 's/time=//g')
 
 if [ -z "$ping" ] ; then
-  ping='Timeout'
+  ping='Timeout' ; beep
 fi
 
 echo SNRdown: $snrdown SNRUp: $snrup Ping: $ping Date: $(date)>> /tmp/stats
