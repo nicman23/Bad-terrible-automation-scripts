@@ -79,7 +79,6 @@ stich() {
   echo -e 'Data Rate (Kbps):''\t''\t'$Ratedown'\t'$Rateup
   echo -e 'SNR Margin (0.1db):''\t''\t'$snrdown'\t'$snrup
   echo -e '\n''\t'Data count '\t'Average '\t'Mean median '\t'Minimum datum '\t'Maximum datum
-  statistics $old
   snr_statistics_up
   snr_statistics_down
 }

@@ -78,7 +78,6 @@ stich() {
   echo -e '\n''\n'
   info $output
   echo -e '\n''\t'Data count '\t'Average '\t'Mean median '\t'Minimum datum '\t'Maximum datum
-  statistics $old
   snr_statistics_up
   snr_statistics_down
 }
